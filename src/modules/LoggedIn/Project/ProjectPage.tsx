@@ -1,6 +1,7 @@
 import React from 'react'
-import { Layout, Typography, Row, Col } from 'antd'
+import { Layout, Typography, Row, Col, Button, Modal } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
+import ProjectForm from './ProjectForm'
 import ProjectList from './ProjectList'
 
 const ProjectPage = () => {
@@ -18,7 +19,10 @@ const ProjectPage = () => {
         </Row>
       </Layout.Header>
       <Layout.Content style={{ padding: 50 }}>
-        <Typography.Title level={4}>Project Workspace</Typography.Title>
+        <Row align="middle" justify="space-between">
+          <Typography.Title level={4}>Project Workspace</Typography.Title>
+          <ProjectForm />
+        </Row>
         <ProjectList />
       </Layout.Content>
     </Layout>
