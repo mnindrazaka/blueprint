@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Typography, Row, Col, Button, Modal } from 'antd'
+import { Layout, Typography, Row, Col } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import ProjectForm from './ProjectForm'
 import ProjectList from './ProjectList'
