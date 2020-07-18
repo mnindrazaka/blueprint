@@ -8,7 +8,7 @@ type Project = {
   description: string
 }
 
-type ProjectRequest = Omit<Project, '_id'>
+export type ProjectRequest = Omit<Project, '_id'>
 
 type ProjectSyncValue = {
   projects: Project[]

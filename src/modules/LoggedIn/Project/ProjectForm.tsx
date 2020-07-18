@@ -1,21 +1,29 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { Button, Modal } from 'antd'
-import { useProjectSync } from './useProjectSync'
-
+import { useProjectSync, ProjectRequest } from './useProjectSync'
 const ProjectForm = () => {
   const projectSync = useProjectSync()
   const [visible, setVisible] = React.useState<boolean>(false)
+  const [newData, setNewData] = React.useState<ProjectRequest>(
+    {
+      name: '',
+      description: ''
+    }
+  )
   const toggleModal = React.useCallback(() => {
     setVisible((prev) => !prev)
   }, [])
 
+  const handleChange = React.useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setNewData({ ...newData, [event.target.name]: event.target.value })
+  }, [newData])
+
   const handleSubmit = React.useCallback(async () => {
-    await projectSync.createProject({
-      name: 'example project',
-      description: 'example project description',
-    })
+    await projectSync.createProject(
+      newData
+    )
     toggleModal()
-  }, [projectSync, toggleModal])
+  }, [projectSync, toggleModal, newData])
 
   return (
     <>
@@ -44,6 +52,9 @@ const ProjectForm = () => {
           <input
             type="text"
             placeholder="Jawa Timur Park"
+            name='name'
+            value={newData.name}
+            onChange={handleChange}
             style={{
               border: '1px solid #D9D9D9',
               outline: 'none',
@@ -59,6 +70,9 @@ const ProjectForm = () => {
           <input
             type="text"
             placeholder="Interactive jawa timur park map for visitor"
+            name='description'
+            value={newData.description}
+            onChange={handleChange}
             style={{
               border: '1px solid #D9D9D9',
               outline: 'none',
