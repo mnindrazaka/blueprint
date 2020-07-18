@@ -13,103 +13,101 @@ type ProjectRequest = Omit<Project, '_id'>
 type ProjectSyncValue = {
   projects: Project[]
   isValidating: boolean
-  error?: string
+  errorValidate?: string
+  isMutating: boolean
+  errorMutate?: string
   createProject: (projectRequest: ProjectRequest) => Promise<void>
   updateProject: (projectRequest: ProjectRequest, id: string) => Promise<void>
   deleteProject: (id: string) => Promise<void>
 }
 
 export const useProjectSync = (): ProjectSyncValue => {
-  const { data: projects, error, mutate, isValidating } = useRequest<Project[]>(
-    '/project'
-  )
+  const {
+    data: projects,
+    isValidating,
+    errorValidate,
+    mutate,
+    isMutating,
+    errorMutate,
+  } = useRequest<Project[]>('/project')
 
   const createProject = React.useCallback(
-    (projectRequest: ProjectRequest) => {
-      return new Promise<void>(async (resolve, reject) => {
-        try {
-          if (!projects) return
+    async (projectRequest: ProjectRequest) => {
+      try {
+        await mutate(async (projects) => {
           const createdProject = await request.post<Project>(
             '/project',
             projectRequest
           )
-          await mutate([...projects, createdProject], false)
-          notification.success({
-            message: 'Project creation success',
-            description: 'Your project is successfully created',
-          })
-          resolve()
-        } catch (err) {
-          notification.error({
-            message: 'Project creation failed',
-            description: err.message,
-          })
-          reject()
-        }
-      })
+          return [...projects, createdProject]
+        })
+        notification.success({
+          message: 'Project creation success',
+          description: 'Your project is successfully created',
+        })
+      } catch (err) {
+        notification.error({
+          message: 'Project creation failed',
+          description: err.message,
+        })
+      }
     },
-    [mutate, projects]
+    [mutate]
   )
 
   const updateProject = React.useCallback(
-    (projectRequest: ProjectRequest, id: string) => {
-      return new Promise<void>(async (resolve, reject) => {
-        try {
-          if (!projects) return
+    async (projectRequest: ProjectRequest, id: string) => {
+      try {
+        await mutate(async (projects) => {
           const updatedProject = await request.put<Project>(
             `/project/${id}`,
             projectRequest
           )
-          await mutate(
-            projects.map((project) =>
-              project._id === id ? updatedProject : project
-            )
+          return projects.map((project) =>
+            project._id === updatedProject._id ? updatedProject : project
           )
-          notification.success({
-            message: 'Project edit success',
-            description: 'Your project is successfully edited',
-          })
-          resolve()
-        } catch (err) {
-          notification.error({
-            message: 'Project edit failed',
-            description: err.message,
-          })
-          reject()
-        }
-      })
+        })
+        notification.success({
+          message: 'Project edit success',
+          description: 'Your project is successfully edited',
+        })
+      } catch (err) {
+        notification.error({
+          message: 'Project edit failed',
+          description: err.message,
+        })
+      }
     },
-    [mutate, projects]
+    [mutate]
   )
 
   const deleteProject = React.useCallback(
-    (id: string) => {
-      return new Promise<void>(async (resolve, reject) => {
-        try {
-          if (!projects) return
-          await request.delete(`/project/${id}`)
-          await mutate(projects.filter((project) => project._id !== id))
-          notification.success({
-            message: 'Project delete success',
-            description: 'Your project is successfully deleted',
-          })
-          resolve()
-        } catch (err) {
-          notification.error({
-            message: 'Project delete failed',
-            description: err.message,
-          })
-          reject()
-        }
-      })
+    async (id: string) => {
+      try {
+        await mutate(async (projects) => {
+          await request.delete<Project>(`/project/${id}`)
+          return projects.filter((project) => project._id !== id)
+        })
+        notification.success({
+          message: 'Project delete success',
+          description: 'Your project is successfully deleted',
+        })
+      } catch (err) {
+        notification.error({
+          message: 'Project delete failed',
+          description: err.message,
+        })
+      }
     },
-    [mutate, projects]
+    [mutate]
   )
 
   return {
     projects: projects || [],
     isValidating,
-    error,
+    errorValidate,
+    isMutating,
+    errorMutate,
     createProject,
     updateProject,
     deleteProject,

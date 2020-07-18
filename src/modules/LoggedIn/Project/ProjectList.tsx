@@ -5,9 +5,24 @@ import { useProjectSync } from './useProjectSync'
 const ProjectList = () => {
   const projectSync = useProjectSync()
   return (
-    <div>
-      <Row style={{ marginTop: 16 }} gutter={[24, 16]}>
-        {projectSync.projects.map((project) => {
+    <Row style={{ marginTop: 16 }} gutter={[24, 16]}>
+      {projectSync.isValidating ? (
+        <>
+          <Col span={6}>
+            <Card loading></Card>
+          </Col>
+          <Col span={6}>
+            <Card loading></Card>
+          </Col>
+          <Col span={6}>
+            <Card loading></Card>
+          </Col>
+          <Col span={6}>
+            <Card loading></Card>
+          </Col>
+        </>
+      ) : (
+        projectSync.projects.map((project) => {
           return (
             <Col span={6} key={project._id}>
               <Card hoverable>
@@ -18,9 +33,9 @@ const ProjectList = () => {
               </Card>
             </Col>
           )
-        })}
-      </Row>
-    </div>
+        })
+      )}
+    </Row>
   )
 }
 

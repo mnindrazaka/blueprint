@@ -1,3 +1,4 @@
+import React from 'react'
 import axios from 'axios'
 import useSWR from 'swr'
 
@@ -61,7 +62,27 @@ export class Request {
 
 export const request = new Request(apiURL || '')
 
-export const useRequest = <T>(path: string) =>
-  useSWR<T>(path, () => request.get<T>(path).then((data) => data), {
-    refreshInterval: 0,
-  })
+export const useRequest = <T>(path: string) => {
+  const { error: errorValidate, ...rest } = useSWR<T>(path, () =>
+    request.get<T>(path).then((data) => data)
+  )
+
+  const [errorMutate, setErrorMutate] = React.useState<string>()
+  const [isMutating, setMutating] = React.useState<boolean>(false)
+
+  const mutate = React.useCallback(
+    async (mutateCallback: (data: T) => Promise<T>) => {
+      try {
+        setMutating(true)
+        await rest.mutate(mutateCallback, false)
+      } catch (error) {
+        setErrorMutate(error.message)
+      } finally {
+        setMutating(false)
+      }
+    },
+    [rest]
+  )
+
+  return { ...rest, errorValidate, mutate, errorMutate, isMutating }
+}

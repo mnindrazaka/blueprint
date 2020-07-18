@@ -27,7 +27,12 @@ const ProjectForm = () => {
           <Button key="back" onClick={toggleModal}>
             Cancel
           </Button>,
-          <Button key="Create Project" type="primary" onClick={handleSubmit}>
+          <Button
+            key="Create Project"
+            type="primary"
+            onClick={handleSubmit}
+            loading={projectSync.isMutating}
+          >
             Create Project
           </Button>,
         ]}
