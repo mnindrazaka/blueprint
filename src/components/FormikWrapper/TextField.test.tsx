@@ -18,7 +18,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-describe('text field', () => {
+describe('TextField', () => {
   it('can change text value', async () => {
     const { getByLabelText } = render(
       <Formik initialValues={{ username: '' }} onSubmit={jest.fn()}>
